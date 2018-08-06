@@ -1,0 +1,41 @@
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  name: nats
+  labels:
+    component: nats
+spec:
+  serviceName: nats
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        component: nats
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+                - key: component
+                  operator: In
+                  values:
+                    - nats
+            topologyKey: kubernetes.io/hostname
+      containers:
+      - name: nats
+        image: nats:1.0.4
+        args: [ "--config", "/etc/nats/config/nats.conf"]
+        ports:
+        - containerPort: 4222
+          name: client
+        - containerPort: 6222
+          name: cluster
+        - containerPort: 8222
+          name: monitor
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8222
+          initialDelaySeconds: 10
+          timeoutSeconds: 5
