@@ -1,0 +1,28 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: unitygowebapi
+  name: unitygowebapi
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: unitygowebapi
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: unitygowebapi
+    spec:
+      containers:
+      - image: manonthesky/unitygowebapi:latest
+        imagePullPolicy: Always
+        name: unitygowebapi
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
